@@ -1,6 +1,8 @@
 'use strict';
-
-// Creating objects, variables & functions
+/*
+ Task 'Милый ДОМ'
+ Creating objects, variables & functions
+*/
 
 var advertsAmount = 8; // Amount of adverts
 var advert = {}; // Object 'advert'
@@ -87,9 +89,9 @@ for (var k = 0; k < advertsAmount; k++) {
 
 // Creating DOM-elements for marks 'pins' in map
 
-var pinMap = document.querySelector('.tokyo__pin-map');
+var pinsInMap = document.querySelector('.tokyo__pin-map');
 
-var createPins = function () {
+var createPins = function () { // function creating new pins
   var fragment = document.createDocumentFragment();
   for (var m = 0; m < advertsAmount; m++) {
     var newPin = document.createElement('div');
@@ -98,27 +100,30 @@ var createPins = function () {
     newPin.style.top = advert[m].location.y + PIN_HEIGHT + 'px';
     newPin.innerHTML = '<img src = "' + advert[m].author.avatar +
       '" class = "rounded" width = "40" height = "40">';
+    newPin.setAttribute('tabindex', '0');
+    newPin.setAttribute('pinId', 'm');
     fragment.appendChild(newPin);
   }
-  pinMap.appendChild(fragment);
+  pinsInMap.appendChild(fragment);
 };
 createPins();
 
 // Creating DOM-element with #lodge-template and first element of 'advert' objects
 
-var lodgeTemplate = document.querySelector('#lodge-template').content;
-var newDialog = document.querySelector('.dialog');
-var newDialogPanel = newDialog.querySelector('.dialog__panel');
 
-var apartType = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalow: 'Бунгало'
-};
+var mainDialog = document.querySelector('.dialog');
+var mainDialogPanel = mainDialog.querySelector('.dialog__panel');
+
+
 //
 var formDialogPanel = function (number) {
+  var apartType = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalow: 'Бунгало'
+  };
+  var lodgeTemplate = document.querySelector('#lodge-template').content;
   var lodgeWindow = lodgeTemplate.cloneNode(true);
-
   lodgeWindow.querySelector('.lodge__title').textContent = advert[number].offer.title;
   lodgeWindow.querySelector('.lodge__address').textContent = advert[number].location.x + ', ' + advert[number].location.y;
   lodgeWindow.querySelector('.lodge__price').innerHTML = advert[number].offer.price + ' &#x20bd;/ночь';
@@ -133,9 +138,48 @@ var formDialogPanel = function (number) {
     features.appendChild(feature);
   }
   lodgeWindow.querySelector('.lodge__features').appendChild(features);
-  newDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
-
-  return lodgeWindow;
+  mainDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
+  // mainDialog.removeChild(mainDialogPanel);
+  // mainDialog.appendChild(lodgeWindow[number]);
+  mainDialog.replaceChild(lodgeWindow[number], mainDialogPanel);
+  return lodgeWindow[number];
 };
-newDialog.removeChild(newDialogPanel); // removing default dialog panel
-newDialog.appendChild(formDialogPanel(0));
+
+// Task 'Подробности'
+
+var KEY_ENTER = 13;
+var KEY_ESCAPE = 27;
+var pin = pinsInMap.querySelectorAll('.pin');
+var dialogClose = mainDialog.querySelector('.dialog__close');
+var mainPin = pinsInMap.querySelector('.pin__main');
+
+var removePinActive = function () {
+  for (var d = 0; d < advertsAmount; d++) {
+    pin[d].classList.remove('pin--active');
+  }
+};
+
+var hideDialog = function (dialog) {
+  dialog.classList.add('hidden');
+};
+
+var showDialog = function (dialog) {
+  dialog.classList.remove('hidden');
+};
+
+var onPinClick = function (evt) {
+  removePinActive();
+  var pinActive = evt.currentTarget;
+  if (pinActive === mainPin) {
+    hideDialog(mainDialog);
+  } else {
+    pinActive.classList.add('pin--active');
+    var pinId = pinActive.getAttribute('pinId');
+    formDialogPanel(pinId);
+    showDialog(mainDialog);
+  }
+};
+
+for (var c = 0; c < advertsAmount; c++) {
+  pin[c].addEventListener('click', onPinClick);
+}
