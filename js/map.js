@@ -1,6 +1,8 @@
 'use strict';
+/*
 
-// Creating objects, variables & functions
+ Creating objects, variables & functions
+*/
 
 var advertsAmount = 8; // Amount of adverts
 var advert = {}; // Object 'advert'
@@ -23,8 +25,10 @@ var locationXMin = 300;
 var locationXMax = 900;
 var locationYMin = 100;
 var locationYMax = 500;
-var PIN_WIDTH = 50;
-var PIN_HEIGHT = 70;
+var PIN_WIDTH = 55;
+var PIN_HEIGHT = 75;
+var PIN_IMG_WIDTH = 40;
+var PIN_IMG_HEIGHT = 40;
 
 var typeMin = 0;
 var typeMax = 2;
@@ -87,38 +91,44 @@ for (var k = 0; k < advertsAmount; k++) {
 
 // Creating DOM-elements for marks 'pins' in map
 
-var pinMap = document.querySelector('.tokyo__pin-map');
+var pinsInMap = document.querySelector('.tokyo__pin-map');
 
-var createPins = function () {
+var createPins = function () { // function creating new pins
   var fragment = document.createDocumentFragment();
   for (var m = 0; m < advertsAmount; m++) {
     var newPin = document.createElement('div');
     newPin.className = 'pin';
     newPin.style.left = advert[m].location.x + PIN_WIDTH / 2 + 'px';
     newPin.style.top = advert[m].location.y + PIN_HEIGHT + 'px';
-    newPin.innerHTML = '<img src = "' + advert[m].author.avatar +
-      '" class = "rounded" width = "40" height = "40">';
+    var newPinImg = document.createElement('img');
+    newPinImg.src = advert[m].author.avatar + '';
+    newPinImg.className = 'rounded';
+    newPinImg.width = PIN_IMG_WIDTH;
+    newPinImg.height = PIN_IMG_HEIGHT;
+    newPinImg.tabIndex = 0;
+
+    newPin.appendChild(newPinImg);
+
     fragment.appendChild(newPin);
   }
-  pinMap.appendChild(fragment);
+  pinsInMap.appendChild(fragment);
 };
 createPins();
 
 // Creating DOM-element with #lodge-template and first element of 'advert' objects
 
-var lodgeTemplate = document.querySelector('#lodge-template').content;
-var newDialog = document.querySelector('.dialog');
-var newDialogPanel = newDialog.querySelector('.dialog__panel');
 
+var mainDialog = document.querySelector('.dialog');
+var lodgeTemplate = document.querySelector('#lodge-template').content;
 var apartType = {
   flat: 'Квартира',
   house: 'Дом',
   bungalow: 'Бунгало'
 };
-//
-var formDialogPanel = function (number) {
-  var lodgeWindow = lodgeTemplate.cloneNode(true);
 
+var formDialogPanel = function (number) {
+
+  var lodgeWindow = lodgeTemplate.cloneNode(true);
   lodgeWindow.querySelector('.lodge__title').textContent = advert[number].offer.title;
   lodgeWindow.querySelector('.lodge__address').textContent = advert[number].location.x + ', ' + advert[number].location.y;
   lodgeWindow.querySelector('.lodge__price').innerHTML = advert[number].offer.price + ' &#x20bd;/ночь';
@@ -133,9 +143,82 @@ var formDialogPanel = function (number) {
     features.appendChild(feature);
   }
   lodgeWindow.querySelector('.lodge__features').appendChild(features);
-  newDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
-
-  return lodgeWindow;
+  mainDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
+  var dialogPanel = mainDialog.querySelector('.dialog__panel');
+  mainDialog.replaceChild(lodgeWindow, dialogPanel);
 };
-newDialog.removeChild(newDialogPanel); // removing default dialog panel
-newDialog.appendChild(formDialogPanel(0));
+
+
+// Task 'Подробности'
+
+var KEY_ENTER = 13;
+var KEY_ESCAPE = 27;
+var dialogClose = mainDialog.querySelector('.dialog__close');
+
+var removePinActive = function () {
+  var pinActive = document.querySelector('.pin--active');
+  if (pinActive) {
+    pinActive.classList.remove('pin--active');
+  }
+};
+
+var hideDialog = function (dialog) {
+  dialog.classList.add('hidden');
+};
+
+var showDialog = function (dialog) {
+  dialog.classList.remove('hidden');
+};
+
+var showPanel = function (part) {
+  var imgSrc = part.src;
+  var imgAddress = imgSrc.slice(imgSrc.indexOf('img'));
+  for (var n = 0; n < advertsAmount; n++) {
+    if (imgAddress === advert[n].author.avatar) {
+      formDialogPanel(n);
+    }
+  }
+};
+
+var removePanel = function () {
+  hideDialog(mainDialog);
+  removePinActive();
+};
+
+var activateDialog = function (evt) {
+  var target = evt.target;
+
+  if (target.tagName === 'IMG' && !target.parentNode.classList.contains('pin__main')) {
+    removePinActive();
+    target.parentNode.classList.add('pin--active');
+    showPanel(target);
+    showDialog(mainDialog);
+  }
+};
+
+var onPinClick = function (evt) {
+  activateDialog(evt);
+};
+
+var onPushEnterButton = function (evt) {
+  if (evt.keyCode === KEY_ENTER) {
+    activateDialog(evt);
+  }
+};
+
+var onCrossClick = function () {
+  removePanel();
+};
+
+var onPushEscButton = function (evt) {
+  if (evt.keyCode === KEY_ESCAPE) {
+    removePanel();
+  }
+};
+
+pinsInMap.addEventListener('click', onPinClick);
+pinsInMap.addEventListener('keydown', onPushEnterButton);
+pinsInMap.addEventListener('keydown', onPushEscButton);
+dialogClose.addEventListener('click', onCrossClick);
+
+
