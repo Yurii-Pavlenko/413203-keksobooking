@@ -1,6 +1,6 @@
 'use strict';
 /*
- Task 'Милый ДОМ'
+
  Creating objects, variables & functions
 */
 
@@ -25,8 +25,10 @@ var locationXMin = 300;
 var locationXMax = 900;
 var locationYMin = 100;
 var locationYMax = 500;
-var PIN_WIDTH = 50;
-var PIN_HEIGHT = 70;
+var PIN_WIDTH = 55;
+var PIN_HEIGHT = 75;
+var PIN_IMG_WIDTH = 40;
+var PIN_IMG_HEIGHT = 40;
 
 var typeMin = 0;
 var typeMax = 2;
@@ -98,10 +100,15 @@ var createPins = function () { // function creating new pins
     newPin.className = 'pin';
     newPin.style.left = advert[m].location.x + PIN_WIDTH / 2 + 'px';
     newPin.style.top = advert[m].location.y + PIN_HEIGHT + 'px';
-    newPin.innerHTML = '<img src = "' + advert[m].author.avatar +
-      '" class = "rounded" width = "40" height = "40">';
-    newPin.setAttribute('tabindex', '0');
-    newPin.setAttribute('pinId', 'm');
+    var newPinImg = document.createElement('img');
+    newPinImg.src = advert[m].author.avatar + '';
+    newPinImg.className = 'rounded';
+    newPinImg.width = PIN_IMG_WIDTH;
+    newPinImg.height = PIN_IMG_HEIGHT;
+    newPinImg.tabIndex = 0;
+
+    newPin.appendChild(newPinImg);
+
     fragment.appendChild(newPin);
   }
   pinsInMap.appendChild(fragment);
@@ -112,17 +119,15 @@ createPins();
 
 
 var mainDialog = document.querySelector('.dialog');
-var mainDialogPanel = mainDialog.querySelector('.dialog__panel');
+var lodgeTemplate = document.querySelector('#lodge-template').content;
+var apartType = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalow: 'Бунгало'
+};
 
-
-//
 var formDialogPanel = function (number) {
-  var apartType = {
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalow: 'Бунгало'
-  };
-  var lodgeTemplate = document.querySelector('#lodge-template').content;
+
   var lodgeWindow = lodgeTemplate.cloneNode(true);
   lodgeWindow.querySelector('.lodge__title').textContent = advert[number].offer.title;
   lodgeWindow.querySelector('.lodge__address').textContent = advert[number].location.x + ', ' + advert[number].location.y;
@@ -139,23 +144,21 @@ var formDialogPanel = function (number) {
   }
   lodgeWindow.querySelector('.lodge__features').appendChild(features);
   mainDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
-  // mainDialog.removeChild(mainDialogPanel);
-  // mainDialog.appendChild(lodgeWindow[number]);
-  mainDialog.replaceChild(lodgeWindow[number], mainDialogPanel);
-  return lodgeWindow[number];
+  var dialogPanel = mainDialog.querySelector('.dialog__panel');
+  mainDialog.replaceChild(lodgeWindow, dialogPanel);
 };
+
 
 // Task 'Подробности'
 
 var KEY_ENTER = 13;
 var KEY_ESCAPE = 27;
-var pin = pinsInMap.querySelectorAll('.pin');
 var dialogClose = mainDialog.querySelector('.dialog__close');
-var mainPin = pinsInMap.querySelector('.pin__main');
 
 var removePinActive = function () {
-  for (var d = 0; d < advertsAmount; d++) {
-    pin[d].classList.remove('pin--active');
+  var pinActive = document.querySelector('.pin--active');
+  if (pinActive) {
+    pinActive.classList.remove('pin--active');
   }
 };
 
@@ -167,19 +170,55 @@ var showDialog = function (dialog) {
   dialog.classList.remove('hidden');
 };
 
-var onPinClick = function (evt) {
+var showPanel = function (part) {
+  var imgSrc = part.src;
+  var imgAddress = imgSrc.slice(imgSrc.indexOf('img'));
+  for (var n = 0; n < advertsAmount; n++) {
+    if (imgAddress === advert[n].author.avatar) {
+      formDialogPanel(n);
+    }
+  }
+};
+
+var removePanel = function () {
+  hideDialog(mainDialog);
   removePinActive();
-  var pinActive = evt.currentTarget;
-  if (pinActive === mainPin) {
-    hideDialog(mainDialog);
-  } else {
-    pinActive.classList.add('pin--active');
-    var pinId = pinActive.getAttribute('pinId');
-    formDialogPanel(pinId);
+};
+
+var activateDialog = function (evt) {
+  var target = evt.target;
+
+  if (target.tagName === 'IMG' && !target.parentNode.classList.contains('pin__main')) {
+    removePinActive();
+    target.parentNode.classList.add('pin--active');
+    showPanel(target);
     showDialog(mainDialog);
   }
 };
 
-for (var c = 0; c < advertsAmount; c++) {
-  pin[c].addEventListener('click', onPinClick);
-}
+var onPinClick = function (evt) {
+  activateDialog(evt);
+};
+
+var onPushEnterButton = function (evt) {
+  if (evt.keyCode === KEY_ENTER) {
+    activateDialog(evt);
+  }
+};
+
+var onCrossClick = function () {
+  removePanel();
+};
+
+var onPushEscButton = function (evt) {
+  if (evt.keyCode === KEY_ESCAPE) {
+    removePanel();
+  }
+};
+
+pinsInMap.addEventListener('click', onPinClick);
+pinsInMap.addEventListener('keydown', onPushEnterButton);
+pinsInMap.addEventListener('keydown', onPushEscButton);
+dialogClose.addEventListener('click', onCrossClick);
+
+
