@@ -1,325 +1,35 @@
 'use strict';
-/*
+(function () {
+  var KEY_ENTER = 13;
+  var KEY_ESCAPE = 27;
+  var dialogClose = window.card.mainDialog.querySelector('.dialog__close');
 
- Creating objects, variables & functions
-*/
+  var hideDialog = function (dialog) {
+    dialog.classList.add('hidden');
+  };
 
-var advertsAmount = 8; // Amount of adverts
-var advert = {}; // Object 'advert'
+  var removePanel = function () {
+    hideDialog(window.card.mainDialog);
+    window.pin.removePinActive();
+  };
 
-var AVATAR_NUMBER = ['01', '02', '03', '04', '05', '06', '07', '08'];
-
-var TITLE = ['Большая уютная квартира',
-  'Маленькая неуютная квартира',
-  'Огромный прекрасный дворец',
-  'Маленький ужасный дворец',
-  'Красивый гостевой домик',
-  'Некрасивый негостеприимный домик',
-  'Уютное бунгало далеко от моря',
-  'Неуютное бунгало по колено в воде']; // Second-order property of object 'offer'
-
-var priceMin = 1000;
-var priceMax = 1000000;
-
-var locationXMin = 300;
-var locationXMax = 900;
-var locationYMin = 100;
-var locationYMax = 500;
-var PIN_WIDTH = 55;
-var PIN_HEIGHT = 75;
-var PIN_IMG_WIDTH = 40;
-var PIN_IMG_HEIGHT = 40;
-
-var typeMin = 0;
-var typeMax = 2;
-var TYPE = ['flat', 'house', 'bungalow']; // Second-order property of object 'offer'
-
-var roomsMin = 1;
-var roomsMax = 5;
-
-var guestsMin = 1;
-var guestsMax = 10;
-
-var checkInOutMin = 0;
-var checkInOutMax = 2;
-var CHECK_IN = ['12:00', '13:00', '14:00']; // Array of second-order properties of object 'offer'
-var CHECK_OUT = ['12:00', '13:00', '14:00'];
-
-var featuresMin = 0;
-var featuresMax = 5;
-var FEATURES = ['wifi',
-  'dish washer',
-  'parking',
-  'washer',
-  'elevator',
-  'conditioner']; // Array of second-order properties of object 'offer'
-
-// Random function declaration
-
-function randomInt(min, max) {
-  var rand = min + Math.random() * (max + 1 - min);
-  rand = Math.floor(rand);
-  return rand;
-}
-
-// Creating array of adverts
-
-for (var k = 0; k < advertsAmount; k++) {
-  advert[k] = {
-    'author': { // First-order property of object 'advert[i]
-      'avatar': 'img/avatars/user' + AVATAR_NUMBER[k] + '.png'
-    },
-    'offer': { // First-order property of object 'advert[i]
-      'title': TITLE[k], // Second-order property of object 'offer'
-      'address': 'location.x,' + 'location.y', // ????????
-      'price': randomInt(priceMin, priceMax),
-      'type': TYPE[randomInt(typeMin, typeMax)],
-      'rooms': randomInt(roomsMin, roomsMax),
-      'guests': randomInt(guestsMin, guestsMax),
-      'checkIn': CHECK_IN[randomInt(checkInOutMin, checkInOutMax)],
-      'checkOut': CHECK_OUT[randomInt(checkInOutMin, checkInOutMax)],
-      'features': FEATURES.slice(randomInt(featuresMin, featuresMax)),
-      'description': '',
-      'photos': []
-    },
-    'location': { // First-order property of object 'advert[i]
-      'x': randomInt(locationXMin, locationXMax),
-      'y': randomInt(locationYMin, locationYMax)
+  var onEnterButtonPush = function (evt) {
+    if (evt.keyCode === KEY_ENTER) {
+      window.pin.activateDialog(evt);
     }
   };
-}
 
-// Creating DOM-elements for marks 'pins' in map
-
-var pinsInMap = document.querySelector('.tokyo__pin-map');
-
-var createPins = function () { // function creating new pins
-  var fragment = document.createDocumentFragment();
-  for (var m = 0; m < advertsAmount; m++) {
-    var newPin = document.createElement('div');
-    newPin.className = 'pin';
-    newPin.style.left = advert[m].location.x + PIN_WIDTH / 2 + 'px';
-    newPin.style.top = advert[m].location.y + PIN_HEIGHT + 'px';
-    var newPinImg = document.createElement('img');
-    newPinImg.src = advert[m].author.avatar + '';
-    newPinImg.className = 'rounded';
-    newPinImg.width = PIN_IMG_WIDTH;
-    newPinImg.height = PIN_IMG_HEIGHT;
-    newPinImg.tabIndex = 0;
-
-    newPin.appendChild(newPinImg);
-
-    fragment.appendChild(newPin);
-  }
-  pinsInMap.appendChild(fragment);
-};
-createPins();
-
-// Creating DOM-element with #lodge-template and first element of 'advert' objects
-
-
-var mainDialog = document.querySelector('.dialog');
-var lodgeTemplate = document.querySelector('#lodge-template').content;
-var apartType = {
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalow: 'Бунгало'
-};
-
-var formDialogPanel = function (number) {
-
-  var lodgeWindow = lodgeTemplate.cloneNode(true);
-  lodgeWindow.querySelector('.lodge__title').textContent = advert[number].offer.title;
-  lodgeWindow.querySelector('.lodge__address').textContent = advert[number].location.x + ', ' + advert[number].location.y;
-  lodgeWindow.querySelector('.lodge__price').innerHTML = advert[number].offer.price + ' &#x20bd;/ночь';
-  lodgeWindow.querySelector('.lodge__type').textContent = apartType[advert[number].offer.type];
-  lodgeWindow.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + advert[number].offer.guests + ' гостей в ' + advert[number].offer.rooms + ' комнатах';
-  lodgeWindow.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + advert[number].offer.checkIn + ', выезд до ' + advert[number].offer.checkOut;
-  lodgeWindow.querySelector('.lodge__description').textContent = advert[number].offer.description;
-  var features = document.createDocumentFragment();
-  for (var b = 0; b < advert[number].offer.features.length; b++) {
-    var feature = document.createElement('span');
-    feature.className = 'feature__image  feature__image--' + advert[number].offer.features[b];
-    features.appendChild(feature);
-  }
-  lodgeWindow.querySelector('.lodge__features').appendChild(features);
-  mainDialog.querySelector('.dialog__title img').src = advert[number].author.avatar;
-  var dialogPanel = mainDialog.querySelector('.dialog__panel');
-  mainDialog.replaceChild(lodgeWindow, dialogPanel);
-};
-
-
-// Task 'Подробности'
-
-var KEY_ENTER = 13;
-var KEY_ESCAPE = 27;
-var dialogClose = mainDialog.querySelector('.dialog__close');
-
-var removePinActive = function () {
-  var pinActive = document.querySelector('.pin--active');
-  if (pinActive) {
-    pinActive.classList.remove('pin--active');
-  }
-};
-
-var hideDialog = function (dialog) {
-  dialog.classList.add('hidden');
-};
-
-var showDialog = function (dialog) {
-  dialog.classList.remove('hidden');
-};
-
-var showPanel = function (part) {
-  var imgSrc = part.src;
-  var imgAddress = imgSrc.slice(imgSrc.indexOf('img'));
-  for (var n = 0; n < advertsAmount; n++) {
-    if (imgAddress === advert[n].author.avatar) {
-      formDialogPanel(n);
-    }
-  }
-};
-
-var removePanel = function () {
-  hideDialog(mainDialog);
-  removePinActive();
-};
-
-var activateDialog = function (evt) {
-  var target = evt.target;
-
-  if (target.tagName === 'IMG' && !target.parentNode.classList.contains('pin__main')) {
-    removePinActive();
-    target.parentNode.classList.add('pin--active');
-    showPanel(target);
-    showDialog(mainDialog);
-  }
-};
-
-var onPinClick = function (evt) {
-  activateDialog(evt);
-};
-
-var onEnterButtonPush = function (evt) {
-  if (evt.keyCode === KEY_ENTER) {
-    activateDialog(evt);
-  }
-};
-
-var onCrossClick = function () {
-  removePanel();
-};
-
-var onEscButtonPush = function (evt) {
-  if (evt.keyCode === KEY_ESCAPE) {
+  var onCrossClick = function () {
     removePanel();
-  }
-};
+  };
 
-pinsInMap.addEventListener('click', onPinClick);
-pinsInMap.addEventListener('keydown', onEnterButtonPush);
-pinsInMap.addEventListener('keydown', onEscButtonPush);
-dialogClose.addEventListener('click', onCrossClick);
-
-// Task 'Доверяй, но проверяй'
-
-// Creating variables & functions for task
-
-var noticeForm = document.querySelector('.notice__form');
-var formSubmit = noticeForm.querySelector('.form__submit');
-
-var title = noticeForm.querySelector('#title');
-var address = noticeForm.querySelector('#address');
-
-var timeIn = noticeForm.querySelector('#timein');
-var timeOut = noticeForm.querySelector('#timeout');
-
-var type = noticeForm.querySelector('#type');
-var price = noticeForm.querySelector('#price');
-
-var roomNumber = noticeForm.querySelector('#room_number');
-var capacity = noticeForm.querySelector('#capacity');
-
-// Functions for selecting time-in & time-out
-var onTimeInChange = function (evt) {
-  timeOut.value = evt.currentTarget.value;
-};
-
-var onTimeOutChange = function (evt) {
-  timeIn.value = evt.currentTarget.value;
-};
-
-// Numbers in the array show how many options will be displayed in the list of capacity for select.
-var capacitySettings = {
-  rooms1: ['1'],
-  rooms2: ['2', '1'],
-  rooms3: ['3', '2', '1'],
-  rooms100: ['0']
-};
-// Function-handler for selecting the number of guests
-var onCapacityChange = function (evt) {
-  var capacitySetElement = 'rooms' + evt.currentTarget.value;
-  for (var p = 0; p < capacity.options.length; p++) {
-    var optionsToShow = capacitySettings[capacitySetElement];
-    var optionValue = capacity.options[p].value;
-    var selectedOption;
-    capacity.options[p].hidden = optionsToShow.indexOf(optionValue) === -1;
-    if (optionsToShow[0] === optionValue) {
-      selectedOption = p;
+  var onEscButtonPush = function (evt) {
+    if (evt.keyCode === KEY_ESCAPE) {
+      removePanel();
     }
-  }
-  capacity.options[selectedOption].selected = true;
-};
+  };
 
-// Function selecting min price for each type of lodging
-var onMinPriceSelect = function (evt) {
-  var selectedOption = evt.currentTarget.value;
-  var minPrice = 0;
-
-  if (selectedOption === 'flat') {
-    minPrice = 1000;
-  } else if (selectedOption === 'house') {
-    minPrice = 5000;
-  } else if (selectedOption === 'palace') {
-    minPrice = 10000;
-  }
-
-  price.min = minPrice;
-  price.value = minPrice;
-};
-
-var checkValidField = function (field) {
-  field.style.borderColor = '';
-
-  if (!field.validity.valid) {
-    field.style.borderColor = '#ff0000';
-  }
-};
-
-var onSubmitClick = function () {
-  checkValidField(title);
-  checkValidField(address);
-  checkValidField(price);
-};
-
-var onValuesDefault = function () {
-  timeIn.removeEventListener('change', onTimeInChange);
-  timeOut.removeEventListener('change', onTimeOutChange);
-  roomNumber.removeEventListener('change', onCapacityChange);
-  type.removeEventListener('change', onMinPriceSelect);
-  formSubmit.removeEventListener('click', onSubmitClick);
-};
-
-timeIn.addEventListener('change', onTimeInChange);
-
-timeOut.addEventListener('change', onTimeOutChange);
-
-roomNumber.addEventListener('change', onCapacityChange);
-
-type.addEventListener('change', onMinPriceSelect);
-
-formSubmit.addEventListener('click', onSubmitClick);
-
-formSubmit.addEventListener('submit', onValuesDefault);
-
-
+  window.pin.mapWithPins.addEventListener('keydown', onEnterButtonPush);
+  window.pin.mapWithPins.addEventListener('keydown', onEscButtonPush);
+  dialogClose.addEventListener('click', onCrossClick);
+})();
