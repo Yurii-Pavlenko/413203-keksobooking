@@ -99,4 +99,9 @@
 
   formSubmit.addEventListener('submit', onValuesDefault);
 
+  window.form = {
+    address: address
+
+  };
+
 })();
