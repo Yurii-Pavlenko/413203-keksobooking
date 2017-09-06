@@ -93,7 +93,11 @@
 
   window.data = {
     advertsList: adverts,
-    advertsAmount: 8
+    advertsAmount: 8,
+    locationXmin: 300,
+    locationXmax: 900,
+    locationYmin: 100,
+    locationYmax: 500
   };
 
 })();
