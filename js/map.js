@@ -56,7 +56,7 @@
       mainPin.style.top = positionY + 'px';
 
       if (positionX <= window.data.locationXmin) {
-        mainPin.style.left = (window.data.locationXmin) + 'px';
+        mainPin.style.left = (window.data.locationXmin + 50) + 'px';
       }
       if (positionX >= window.data.locationXmax) {
         mainPin.style.left = (window.data.locationXmax) + 'px';
