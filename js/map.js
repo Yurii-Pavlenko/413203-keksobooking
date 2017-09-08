@@ -5,7 +5,11 @@
   var dialogClose = window.card.mainDialog.querySelector('.dialog__close');
   var mainPin = window.pin.mapWithPins.querySelector('.pin__main');
   var MAIN_PIN_WIDTH = 75;
-  var MAIN_PIN_HEIGHT = 94;
+  var MAIN_PIN_HEIGHT = 70;
+  var minPositionX = window.data.locationXmin - Math.floor(MAIN_PIN_WIDTH / 2);
+  var maxPositionX = window.data.locationXmax + Math.floor(MAIN_PIN_WIDTH / 2);
+  var minPositionY = window.data.locationYmin + MAIN_PIN_HEIGHT;
+  var maxPositionY = window.data.locationYmax + MAIN_PIN_HEIGHT;
 
   var hideDialog = function (dialog) {
     dialog.classList.add('hidden');
@@ -55,17 +59,17 @@
       mainPin.style.left = positionX + 'px';
       mainPin.style.top = positionY + 'px';
 
-      if (positionX <= window.data.locationXmin) {
-        mainPin.style.left = (window.data.locationXmin + 50) + 'px';
+      if (positionX <= minPositionX) {
+        mainPin.style.left = minPositionX + 'px';
       }
-      if (positionX >= window.data.locationXmax) {
-        mainPin.style.left = (window.data.locationXmax) + 'px';
+      if (positionX >= maxPositionX) {
+        mainPin.style.left = maxPositionX + 'px';
       }
-      if (positionY <= window.data.locationYmin) {
-        mainPin.style.top = (window.data.locationYmin) + 'px';
+      if (positionY <= minPositionY) {
+        mainPin.style.top = minPositionY + 'px';
       }
-      if (positionY >= window.data.locationYmax) {
-        mainPin.style.top = (window.data.locationYmax) + 'px';
+      if (positionY >= maxPositionY) {
+        mainPin.style.top = maxPositionY + 'px';
       }
 
       window.form.address.value = (positionX + Math.floor(MAIN_PIN_WIDTH / 2)) + ', ' + (positionY + MAIN_PIN_HEIGHT);

@@ -41,16 +41,6 @@
     dialog.classList.remove('hidden');
   };
 
-  var showPanel = function (part) {
-    var imgSrc = part.src;
-    var imgAddress = imgSrc.slice(imgSrc.indexOf('img'));
-    for (var n = 0; n < window.data.advertsAmount; n++) {
-      if (imgAddress === window.data.advertsList[n].author.avatar) {
-        window.card.formDialogPanel(n);
-      }
-    }
-  };
-
   var onPinClick = function (evt) {
     window.pin.activateDialog(evt);
   };
@@ -71,7 +61,7 @@
       if (target.tagName === 'IMG' && !target.parentNode.classList.contains('pin__main')) {
         window.pin.removePinActive();
         target.parentNode.classList.add('pin--active');
-        showPanel(target);
+        window.showCard(target);
         showDialog(window.card.mainDialog);
       }
     }
