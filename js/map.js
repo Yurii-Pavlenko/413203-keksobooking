@@ -10,14 +10,20 @@
   var maxPositionX = window.data.locationXmax + Math.floor(MAIN_PIN_WIDTH / 2);
   var minPositionY = window.data.locationYmin + MAIN_PIN_HEIGHT;
   var maxPositionY = window.data.locationYmax + MAIN_PIN_HEIGHT;
-
-  var onLoadSuccess = function (data) {
-    window.map.similarAdverts = data;
+  window.map = {
+    similarAdverts: []
   };
 
-  var mapWithPins = window.pin.createPins(window.map.similarAdverts);
+  var onLoadSuccess = function (data) {
+    if (data !== 'undefined') {
+      window.map.similarAdverts = data;
+    }
+  };
 
   window.backend.load(onLoadSuccess, window.backend.onLoadError);
+
+
+  var mapWithPins = window.pin.createPins(window.map.similarAdverts);
 
   var hideDialog = function (dialog) {
     dialog.classList.add('hidden');
@@ -99,7 +105,4 @@
 
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
 
-  window.map = {
-    similarAdverts: [],
-  };
 })();
