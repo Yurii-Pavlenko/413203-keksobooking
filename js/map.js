@@ -3,13 +3,21 @@
   var KEY_ENTER = 13;
   var KEY_ESCAPE = 27;
   var dialogClose = window.card.mainDialog.querySelector('.dialog__close');
-  var mainPin = window.pin.mapWithPins.querySelector('.pin__main');
+  var mainPin = document.querySelector('.pin__main');
   var MAIN_PIN_WIDTH = 75;
   var MAIN_PIN_HEIGHT = 70;
   var minPositionX = window.data.locationXmin - Math.floor(MAIN_PIN_WIDTH / 2);
   var maxPositionX = window.data.locationXmax + Math.floor(MAIN_PIN_WIDTH / 2);
   var minPositionY = window.data.locationYmin + MAIN_PIN_HEIGHT;
   var maxPositionY = window.data.locationYmax + MAIN_PIN_HEIGHT;
+
+  var onLoadSuccess = function (data) {
+    window.map.similarAdverts = data;
+  };
+
+  var mapWithPins = window.pin.createPins(window.map.similarAdverts);
+
+  window.backend.load(onLoadSuccess, window.backend.onLoadError);
 
   var hideDialog = function (dialog) {
     dialog.classList.add('hidden');
@@ -85,9 +93,13 @@
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  window.pin.mapWithPins.addEventListener('keydown', onEnterButtonPush);
-  window.pin.mapWithPins.addEventListener('keydown', onEscButtonPush);
+  mapWithPins.addEventListener('keydown', onEnterButtonPush);
+  mapWithPins.addEventListener('keydown', onEscButtonPush);
   dialogClose.addEventListener('click', onCrossClick);
 
   mainPin.addEventListener('mousedown', onMainPinMouseDown);
+
+  window.map = {
+    similarAdverts: [],
+  };
 })();
