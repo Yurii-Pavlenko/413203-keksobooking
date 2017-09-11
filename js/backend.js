@@ -18,16 +18,16 @@
           onLoad(xhr.response);
           break;
         case 400:
-          error = 'Неверный запрос';
+          error = 'Bad Request';
           break;
         case 401:
-          error = 'Пользователь не авторизован';
+          error = 'Unauthorized';
           break;
         case 404:
-          error = 'Неверный адрес запроса';
+          error = 'Not Found';
           break;
         default:
-          error = 'Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText;
+          error = 'Unknown Status: ' + xhr.status + ' ' + xhr.statusText;
       }
       if (error) {
         onError(error);
@@ -57,7 +57,7 @@
       xhr.send(data);
     },
 
-    onLoadError: function (errorMessage) {
+    onError: function (errorMessage) {
       var onCloseButtonClick = function () {
         document.body.removeChild(errorDiv);
 

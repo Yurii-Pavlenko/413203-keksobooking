@@ -1,6 +1,7 @@
 'use strict';
 (function () {
-  // Creating variables & functions for task
+
+  /* Creating variables & functions*/
 
   var noticeForm = document.querySelector('.notice__form');
   var formSubmit = noticeForm.querySelector('.form__submit');
@@ -21,13 +22,19 @@
 
   var LOGING_MIN_PRICE = ['0', '1000', '5000', '10000'];
 
+  /* Synchronize timeIn & timeOut*/
+
   var syncValues = function (field1, field2) {
     field2.options.selectedIndex = field1.options.selectedIndex;
   };
 
+  /* Choosing min price*/
+
   var checkMinPrice = function (num) {
     price.value = num;
   };
+
+  /* Synchronize min price with housing type*/
 
   var syncValueWithMin = function (loging, cost) {
     switch (loging.selectedIndex) {
@@ -50,11 +57,15 @@
     }
   };
 
+  /* Removing hidden attribute */
+
   var removeDisabledAttribute = function () {
     for (var i = 0; i < capacityOptions.length; i++) {
       capacityOptions[i].removeAttribute('hidden');
     }
   };
+
+  /* Synchronize rooms number with guests capacity */
 
   var syncValueWithCapacity = function (rooms, guests) {
     switch (rooms.selectedIndex) {
@@ -97,6 +108,8 @@
     }
   };
 
+  /* Event handlers */
+
   var onTimeInChange = function () {
     window.synchronizeFields(timeIn, timeOut, syncValues);
   };
@@ -113,6 +126,8 @@
     window.synchronizeFields(type, price, syncValueWithMin);
   };
 
+  /* Filds validation */
+
   var checkValidField = function (field) {
     field.style.borderColor = '';
 
@@ -121,11 +136,15 @@
     }
   };
 
+  /* Handler for submit button */
+
   var onSubmitClick = function () {
     checkValidField(title);
     checkValidField(address);
     checkValidField(price);
   };
+
+  /* Reset settings to default */
 
   var onValuesDefault = function () {
     timeIn.removeEventListener('change', onTimeInChange);
@@ -133,6 +152,17 @@
     roomNumber.removeEventListener('change', onCapacityChange);
     type.removeEventListener('change', onMinPriceSelect);
     formSubmit.removeEventListener('click', onSubmitClick);
+  };
+
+  var resetNoticeForm = function () {
+    noticeForm.reset();
+  };
+
+  /* Sending form */
+
+  var onNoticeFormSubmit = function (evt) {
+    window.backend.save(new FormData(noticeForm), resetNoticeForm, window.backend.onError);
+    evt.preventDefault();
   };
 
   timeIn.addEventListener('change', onTimeInChange);
@@ -147,7 +177,9 @@
 
   formSubmit.addEventListener('submit', onValuesDefault);
 
-  window.form = { // ???????
+  noticeForm.addEventListener('submit', onNoticeFormSubmit);
+
+  window.form = {
     address: address
 
   };

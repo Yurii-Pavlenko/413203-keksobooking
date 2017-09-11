@@ -8,24 +8,26 @@
     bungalow: 'Бунгало'
   };
 
-  var formDialogPanel = function (number) {
+  /* Form generate new advert panel*/
 
+  var formDialogPanel = function (number) {
+    var advert = window.map.similarAdverts[number];
     var lodgeWindow = lodgeTemplate.cloneNode(true);
-    lodgeWindow.querySelector('.lodge__title').textContent = window.data.advertsList[number].offer.title;
-    lodgeWindow.querySelector('.lodge__address').textContent = window.data.advertsList[number].location.x + ', ' + window.data.advertsList[number].location.y;
-    lodgeWindow.querySelector('.lodge__price').innerHTML = window.data.advertsList[number].offer.price + ' &#x20bd;/ночь';
-    lodgeWindow.querySelector('.lodge__type').textContent = apartType[window.data.advertsList[number].offer.type];
-    lodgeWindow.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + window.data.advertsList[number].offer.guests + ' гостей в ' + window.data.advertsList[number].offer.rooms + ' комнатах';
-    lodgeWindow.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + window.data.advertsList[number].offer.checkIn + ', выезд до ' + window.data.advertsList[number].offer.checkOut;
-    lodgeWindow.querySelector('.lodge__description').textContent = window.data.advertsList[number].offer.description;
+    lodgeWindow.querySelector('.lodge__title').textContent = advert.offer.title;
+    lodgeWindow.querySelector('.lodge__address').textContent = advert.offer.address;
+    lodgeWindow.querySelector('.lodge__price').innerHTML = advert.offer.price + ' &#x20bd;/ночь';
+    lodgeWindow.querySelector('.lodge__type').textContent = apartType[advert.offer.type];
+    lodgeWindow.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + advert.offer.guests + ' гостей в ' + advert.offer.rooms + ' комнатах';
+    lodgeWindow.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + advert.offer.checkin + ', выезд до ' + advert.offer.checkout;
+    lodgeWindow.querySelector('.lodge__description').textContent = advert.offer.description;
     var features = document.createDocumentFragment();
-    for (var b = 0; b < window.data.advertsList[number].offer.features.length; b++) {
+    for (var b = 0; b < advert.offer.features.length; b++) {
       var feature = document.createElement('span');
-      feature.className = 'feature__image  feature__image--' + window.data.advertsList[number].offer.features[b];
+      feature.className = 'feature__image  feature__image--' + advert.offer.features[b];
       features.appendChild(feature);
     }
     lodgeWindow.querySelector('.lodge__features').appendChild(features);
-    mainDialog.querySelector('.dialog__title img').src = window.data.advertsList[number].author.avatar;
+    mainDialog.querySelector('.dialog__title img').src = advert.author.avatar;
     var dialogPanel = mainDialog.querySelector('.dialog__panel');
     mainDialog.replaceChild(lodgeWindow, dialogPanel);
   };

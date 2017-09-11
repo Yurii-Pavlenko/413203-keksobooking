@@ -1,12 +1,16 @@
 'use strict';
 (function () {
+  /* Showing advert panel depending of choosing pin  */
   window.showCard = function (part) {
     var imgSrc = part.src;
     var imgAddress = imgSrc.slice(imgSrc.indexOf('img'));
-    for (var n = 0; n < window.data.advertsAmount; n++) {
-      if (imgAddress === window.data.advertsList[n].author.avatar) {
-        window.card.formDialogPanel(n);
+
+    var sortOut = function (item, i) {
+      if (imgAddress === item.author.avatar) {
+        window.card.formDialogPanel(i);
       }
-    }
+    };
+
+    window.map.similarAdverts.forEach(sortOut);
   };
 })();
