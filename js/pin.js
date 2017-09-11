@@ -1,41 +1,11 @@
 'use strict';
 (function () {
-  var pinsInMap = document.querySelector('.tokyo__pin-map');
+  var pinMap = document.querySelector('.tokyo__pin-map');
+  var mainDialog = document.querySelector('#offer-dialog');
   var PIN_WIDTH = 55;
   var PIN_HEIGHT = 75;
   var PIN_IMG_WIDTH = 40;
   var PIN_IMG_HEIGHT = 40;
-  var mapWithPins = [];
-
-  var createPins = function (advert) { // function creating new pins
-    var fragment = document.createDocumentFragment();
-    for (var m = 0; m < window.data.advertsAmount; m++) {
-      var newPin = document.createElement('div');
-      newPin.className = 'pin';
-      newPin.style.left = advert[m].location.x + PIN_WIDTH / 2 + 'px';
-      newPin.style.top = advert[m].location.y + PIN_HEIGHT + 'px';
-      var newPinImg = document.createElement('img');
-      newPinImg.src = advert[m].author.avatar + '';
-      newPinImg.className = 'rounded';
-      newPinImg.width = PIN_IMG_WIDTH;
-      newPinImg.height = PIN_IMG_HEIGHT;
-      newPinImg.tabIndex = 0;
-
-      newPin.appendChild(newPinImg);
-
-      fragment.appendChild(newPin);
-    }
-    pinsInMap.appendChild(fragment);
-    return pinsInMap;
-  };
-  /*
-
-  for (var i = 0; i < window.data.advertsAmount; i++) {
-    mapWithPins[i] = createPins(window.data.advertsList[i]);
-  }
-*/
-
-  mapWithPins = createPins(window.data.advertsList);
 
   var showDialog = function (dialog) {
     dialog.classList.remove('hidden');
@@ -45,24 +15,45 @@
     window.pin.activateDialog(evt);
   };
 
-  mapWithPins.addEventListener('click', onPinClick);
+  pinMap.addEventListener('click', onPinClick);
+
 
   window.pin = {
-    mapWithPins: mapWithPins,
-    removePinActive: function () {
+    createPin: function (advert, fragment, id) { // Function for creating new pins
+
+      var newPin = document.createElement('div');
+      if (typeof id !== 'undefined') {
+        newPin.dataset.id = id;
+      }
+      newPin.className = 'pin';
+      newPin.style.left = advert.location.x - PIN_WIDTH / 2 + 'px';
+      newPin.style.top = advert.location.y - PIN_HEIGHT + 'px';
+      var newPinImg = document.createElement('img');
+      newPinImg.src = advert.author.avatar + '';
+      newPinImg.className = 'rounded';
+      newPinImg.width = PIN_IMG_WIDTH;
+      newPinImg.height = PIN_IMG_HEIGHT;
+      newPinImg.tabIndex = 0;
+
+      newPin.appendChild(newPinImg);
+
+      fragment.appendChild(newPin);
+    },
+    removePinActive: function () { // Deactivate pin
       var pinActive = document.querySelector('.pin--active');
       if (pinActive) {
         pinActive.classList.remove('pin--active');
       }
     },
-    activateDialog: function (evt) {
+
+    activateDialog: function (evt) { // Activate advert panel of choosed pin
       var target = evt.target;
 
       if (target.tagName === 'IMG' && !target.parentNode.classList.contains('pin__main')) {
         window.pin.removePinActive();
         target.parentNode.classList.add('pin--active');
         window.showCard(target);
-        showDialog(window.card.mainDialog);
+        showDialog(mainDialog);
       }
     }
   };
