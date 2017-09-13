@@ -2,7 +2,6 @@
 (function () {
 
   /* Creating variables & functions*/
-
   var noticeForm = document.querySelector('.notice__form');
   var formSubmit = noticeForm.querySelector('.form__submit');
 
@@ -29,13 +28,11 @@
   };
 
   /* Choosing min price*/
-
   var checkMinPrice = function (num) {
     price.value = num;
   };
 
   /* Synchronize min price with housing type*/
-
   var syncValueWithMin = function (loging, cost) {
     switch (loging.selectedIndex) {
       case 0:
@@ -58,7 +55,6 @@
   };
 
   /* Removing hidden attribute */
-
   var removeDisabledAttribute = function () {
     for (var i = 0; i < capacityOptions.length; i++) {
       capacityOptions[i].removeAttribute('hidden');
@@ -66,7 +62,6 @@
   };
 
   /* Synchronize rooms number with guests capacity */
-
   var syncValueWithCapacity = function (rooms, guests) {
     switch (rooms.selectedIndex) {
       // 1 room
@@ -109,7 +104,6 @@
   };
 
   /* Event handlers */
-
   var onTimeInChange = function () {
     window.synchronizeFields(timeIn, timeOut, syncValues);
   };
@@ -127,7 +121,6 @@
   };
 
   /* Filds validation */
-
   var checkValidField = function (field) {
     field.style.borderColor = '';
 
@@ -137,7 +130,6 @@
   };
 
   /* Handler for submit button */
-
   var onSubmitClick = function () {
     checkValidField(title);
     checkValidField(address);
@@ -145,7 +137,6 @@
   };
 
   /* Reset settings to default */
-
   var onValuesDefault = function () {
     timeIn.removeEventListener('change', onTimeInChange);
     timeOut.removeEventListener('change', onTimeOutChange);
@@ -159,7 +150,6 @@
   };
 
   /* Sending form */
-
   var onNoticeFormSubmit = function (evt) {
     window.backend.save(new FormData(noticeForm), resetNoticeForm, window.backend.onError);
     evt.preventDefault();
@@ -181,7 +171,6 @@
 
   window.form = {
     address: address
-
   };
 
 })();
