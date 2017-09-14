@@ -1,6 +1,6 @@
 'use strict';
 (function () {
-  var serverUrl = 'https://1510.dump.academy/keksobooking';
+  var SERVER_URL = 'https://1510.dump.academy/keksobooking';
 
   var setup = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -46,14 +46,14 @@
     load: function (onLoad, onError) {
       var xhr = setup(onLoad, onError);
 
-      xhr.open('GET', serverUrl + '/data');
+      xhr.open('GET', SERVER_URL + '/data');
       xhr.send();
     },
 
     save: function (data, onLoad, onError) {
       var xhr = setup(onLoad, onError);
 
-      xhr.open('POST', serverUrl);
+      xhr.open('POST', SERVER_URL);
       xhr.send(data);
     },
 

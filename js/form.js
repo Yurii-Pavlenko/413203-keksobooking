@@ -19,7 +19,7 @@
   var capacity = noticeForm.querySelector('#capacity');
   var capacityOptions = capacity.options;
 
-  var LOGING_MIN_PRICE = ['0', '1000', '5000', '10000'];
+  var LOGING_MIN_PRICES = ['0', '1000', '5000', '10000'];
 
   /* Synchronize timeIn & timeOut*/
 
@@ -36,20 +36,20 @@
   var syncValueWithMin = function (loging, cost) {
     switch (loging.selectedIndex) {
       case 0:
-        cost.setAttribute('min', LOGING_MIN_PRICE[1]);
-        checkMinPrice(LOGING_MIN_PRICE[1]);
+        cost.setAttribute('min', LOGING_MIN_PRICES[1]);
+        checkMinPrice(LOGING_MIN_PRICES[1]);
         break;
       case 1:
-        cost.setAttribute('min', LOGING_MIN_PRICE[0]);
-        checkMinPrice(LOGING_MIN_PRICE[0]);
+        cost.setAttribute('min', LOGING_MIN_PRICES[0]);
+        checkMinPrice(LOGING_MIN_PRICES[0]);
         break;
       case 2:
-        cost.setAttribute('min', LOGING_MIN_PRICE[2]);
-        checkMinPrice(LOGING_MIN_PRICE[2]);
+        cost.setAttribute('min', LOGING_MIN_PRICES[2]);
+        checkMinPrice(LOGING_MIN_PRICES[2]);
         break;
       case 3:
-        cost.setAttribute('min', LOGING_MIN_PRICE[3]);
-        checkMinPrice(LOGING_MIN_PRICE[3]);
+        cost.setAttribute('min', LOGING_MIN_PRICES[3]);
+        checkMinPrice(LOGING_MIN_PRICES[3]);
         break;
     }
   };
