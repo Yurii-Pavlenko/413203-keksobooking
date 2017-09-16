@@ -21,12 +21,12 @@ window.filter = (function () {
 
   /* Filter by type of housing */
   var filterByType = function (elem) {
-    return housingType.value === 'any' ? adverts : elem.offer.type === housingType.value;
+    return housingType.value === 'any' || elem.offer.type === housingType.value;
   };
 
   /* Filter by quantity of rooms */
   var filterByRoomsCount = function (elem) {
-    return housingRooms.value === 'any' ? adverts : elem.offer.rooms === Number(housingRooms.value);
+    return housingRooms.value === 'any' || elem.offer.rooms === Number(housingRooms.value);
   };
 
   /* Filter by price */
@@ -48,7 +48,7 @@ window.filter = (function () {
 
   /* Filter by quantity of guests */
   var filterByGuestsCount = function (elem) {
-    return housingGuests.value === 'any' ? adverts : elem.offer.guests === Number(housingGuests.value);
+    return housingGuests.value === 'any' || elem.offer.guests === Number(housingGuests.value);
   };
 
   /* Filter by features */
